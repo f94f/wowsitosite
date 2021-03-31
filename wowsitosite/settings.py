@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '0.0.0.0'
-    'the-yogify.herokuapp.com',
+    'stormy-cove-17235.herokuapp.com',
     '127.0.0.1'
 ]
 
