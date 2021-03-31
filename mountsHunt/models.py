@@ -12,6 +12,8 @@ class Mount(models.Model):
     url_wowhead = models.CharField(max_length=100, null=True)
     image_mini = models.CharField(max_length=100, null=True)
     image = models.CharField(max_length=100, null=True)
+    url_img = models.CharField(max_length=100, null=True)
+    url_img_min = models.CharField(max_length=100, null=True)
 
     @classmethod
     def create(cls, **kwargs):
@@ -26,5 +28,7 @@ class Mount(models.Model):
             url_info = kwargs['UrlInfo'],
             url_wowhead = kwargs['UrlWowhead'],
             image_mini = kwargs['ImageMini'],
-            image = kwargs['Image']
+            image = kwargs['Image'],
+            url_img = kwargs['Id'] + "-" + kwargs['Name'].replace('/', ' ') + "/" + kwargs['Image'],
+            url_img_min = kwargs['Id'] + "-" + kwargs['Name'].replace('/', ' ') + "/" + kwargs['ImageMini']
         )

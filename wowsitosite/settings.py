@@ -27,7 +27,7 @@ SECRET_KEY = 'bb8&m_lk-14lk@y1r&l$grsj0gn6ey)9jyopm6+ebd*sc==wef'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '0.0.0.0'
+    '0.0.0.0',
     'stormy-cove-17235.herokuapp.com',
     '127.0.0.1'
 ]
@@ -124,3 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "assets"),
+)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+

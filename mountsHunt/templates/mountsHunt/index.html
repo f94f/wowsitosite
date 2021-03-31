@@ -1,188 +1,175 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebMounts</title>
+{% extends "mountsHunt/_base.html" %}
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
-    <!--<link rel="stylesheet" href="~/css/site.css" />-->
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebMounts</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+{% block content %}
+<div id="app">
+    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th class="th-sm"></th>
+                <th class="th-sm">
+                    Name
+                </th>
+                <th class="th-sm">
+                    Expansion
+                </th>
+                <th class="th-sm">
+                    Notes
+                </th>
+                <th class="th-sm">
+                    WarcraftMounts
+                </th>
+                <th class="th-sm">
+                    Wowhead
+                </th>
+                <th class="th-sm nosort"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in mount_list %}
+            <tr>
+                <td>
+                    <a data-toggle="modal" data-target="#imgModal" data-name="{{ m.name }}" data-img="/media/img/{{ m.url_img }}">
+                        <img src="media/img/{{ m.url_img_min }}" class="rounded-circle img_click" height="40" width="40" />
+                    </a>
+                    <span hidden>{{ m.id }}</span>
+                </td>
+                <td>{{ m.name }}</td>
+                <td>{{ m.expansion }}</td>
+                <td>{{ m.notes_1 }}</td>
+                <td class="td_centered"><a href="{{ m.url_info }}" class="btn btn-primary">URL</a></td>
+                <td class="td_centered"><a href="{{ m.url_wowhead }}" class="btn btn-secondary">URL</a></td>
+                <td>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#infoModal" data-name="{{ m.name }}" onclick="getDataMount('{{m.id}}')">Info</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th class="th-sm nosort"></th>
+                <th class="th-sm">
+                    Name
+                </th>
+                <th class="th-sm">
+                    Expansion
+                </th>
+                <th class="th-sm">
+                    Notes
+                </th>
+                <th class="th-sm">
+                    WarcraftMounts
+                </th>
+                <th class="th-sm">
+                    Wowhead
+                </th>
+                <th class="th-sm nosort"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalCenter" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
             </div>
-        </nav>
-    </header>
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
-            <div id="app">
-                <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                    <thead>
-                        <tr>
-                            <th class="th-sm nosort"></th>
-                            <th class="th-sm">
-                                Name
-                            </th>
-                            <th class="th-sm">
-                                Expansion
-                            </th>
-                            <th class="th-sm">
-                                Notes
-                            </th>
-                            <th class="th-sm">
-                                URL
-                            </th>
-                            <th class="th-sm">
-                                Wowhead
-                            </th>
-                            <th class="th-sm nosort">Try</th>
-                            <th class="th-sm nosort"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for m in mount_list %}
-                        <tr>
-                            <td>
-                                <a data-toggle="modal" data-target="#imgModal" data-name="{{ m.name }}" data-img="/img/{{ m.id }}-{{ m.name }}/{{ m.image }}">
-                                    <img src="~/img/{{ m.id }}-{{ m.name }}/{{ m.image_mini }}" class="rounded-circle img_click" height="40" width="40" />
-                                </a>
-                            </td>
-                            <td>{{ m.name }}</td>
-                            <td>{{ m.expansion }}</td>
-                            <td>{{ m.notes_1 }}</td>
-                            <td><a href="{{ m.url_info }}">{{ m.url_info }}</a></td>
-                            <td><a href="{{ m.url_wowhead }}">{{ m.url_wowhead }}</a></td>
-                            <td>
-                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#infoModal" data-name="{{ m.name }}">Info</button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th class="th-sm nosort"></th>
-                            <th class="th-sm">
-                                Name
-                            </th>
-                            <th class="th-sm">
-                                Expansion
-                            </th>
-                            <th class="th-sm">
-                                Notes
-                            </th>
-                            <th class="th-sm">
-                                URL
-                            </th>
-                            <th class="th-sm">
-                                Wowhead
-                            </th>
-                            <th class="th-sm nosort">0</th>
-                            <th class="th-sm nosort"></th>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div id="modal-info-body" class="modal-body">
+                ...
             </div>
-
-            <!-- Modal -->
-            <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalCenter" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            ...
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
-
-            <!-- IMG Modal -->
-            <div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalCenter" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <img id="img-modal-lr" class="rounded mx-auto d-block" src="" asp-append-version="true" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - WebMounts - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- IMG Modal -->
+<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalCenter" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="img-modal-lr" class="rounded mx-auto d-block" src="" asp-append-version="true" />
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+{% block css %}
+<link rel="stylesheet" href="media/css/mountsHunt.css" />
+{% endblock %}
 
-    <!--<script src="~/js/site.js" asp-append-version="true"></script>-->
-    <script>
-        $(document).ready(function () {
-            $('#dtBasicExample').DataTable({
-                "pageLength": 25,
-                'aoColumnDefs': [{
-                    'bSortable': false,
-                    'aTargets': ['nosort']
-                }]
-            });
-            $('.dataTables_length').addClass('bs-select');
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('#dtBasicExample').DataTable({
+            "pageLength": 13,
+            'aoColumnDefs': [{
+                'bSortable': false,
+                'aTargets': ['nosort']
+            }]
         });
+        $('.dataTables_length').addClass('bs-select');
+    });
 
-        $('#infoModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var recipient = button.data('name') // Extract info from data-* attributes
-            var modal = $(this)
-            modal.find('.modal-title').text(recipient)
-        })
+    $('#infoModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var recipient = button.data('name') // Extract info from data-* attributes
+        var modal = $(this)
+        modal.find('.modal-title').text(recipient)
+    })
 
-        $('#imgModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget)
-            var name = button.data('name')
-            var img = button.data('img')
-            var modal = $(this)
-            modal.find('.modal-title').text(name)
-            $("#img-modal-lr").attr("src", img);
-        })
-    </script>
-</body>
-</html>
+    $('#imgModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var name = button.data('name')
+        var img = button.data('img')
+        var modal = $(this)
+        modal.find('.modal-title').text(name)
+        $("#img-modal-lr").attr("src", img);
+    })
+
+    function getDataMount(id) {
+        $.ajax({
+            type: "GET",
+            url: "/mount/" + id,
+            success: function (response) {
+                $("#modal-info-body").empty();
+                $("#modal-info-body").append(response);
+                console.log(response);
+            },
+            error: function (response) {
+            }
+        });
+    }
+
+    // $("a.cantidad-pendientes").on("click", function () {
+    //     var row = $(this).closest('tr');
+    //     var placa = (row.find("td:eq(1)").html().trim());
+    //     var estado = 0;
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "@(Url.Action("_EntregasPorEstadoYPlaca", "Distribucion"))",
+    //         data: { Placa: placa, Estado: estado },
+    //         success: function (response) {
+    //             $("#ent-pen-cuerpo").empty();
+    //             $("#ent-pen-cuerpo").append(response);
+    //             $("#entregas-pendientes").modal();
+    //         },
+    //         error: function (response) {
+    //         }
+    //     });
+    // });
+</script>
+{% endblock %}
