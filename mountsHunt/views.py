@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.core.serializers import serialize
 from django.http import HttpResponse
 from mountsHunt.models import Mount
-from mountsHunt.serializers import MountSerializer
 
 def Hello(request):
     return HttpResponse("Hello, world. You're at the polls index.")
