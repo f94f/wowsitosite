@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from mountsHunt.models import Mount
 
 class MountSerializer(serializers.ModelSerializer):
