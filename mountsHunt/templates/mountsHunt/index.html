@@ -2,108 +2,219 @@
 
 {% block content %}
 <div id="app">
-    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th class="th-sm"></th>
-                <th class="th-sm">
-                    Name
-                </th>
-                <th class="th-sm">
-                    Expansion
-                </th>
-                <th class="th-sm">
-                    Notes
-                </th>
-                <th class="th-sm">
-                    WarcraftMounts
-                </th>
-                <th class="th-sm">
-                    Wowhead
-                </th>
-                <th class="th-sm nosort"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in mount_list %}
-            <tr>
-                <td>
-                    <a data-toggle="modal" data-target="#imgModal" data-name="{{ m.name }}" data-img="/media/img/{{ m.url_img }}">
-                        <img src="media/img/{{ m.url_img_min }}" class="rounded-circle img_click" height="40" width="40" />
-                    </a>
-                    <span hidden>{{ m.id }}</span>
-                </td>
-                <td>{{ m.name }}</td>
-                <td>{{ m.expansion }}</td>
-                <td>{{ m.notes_1 }}</td>
-                <td class="td_centered"><a href="{{ m.url_info }}" class="btn btn-primary">URL</a></td>
-                <td class="td_centered"><a href="{{ m.url_wowhead }}" class="btn btn-secondary">URL</a></td>
-                <td>
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#infoModal" data-name="{{ m.name }}" onclick="getDataMount('{{m.id}}')">Info</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th class="th-sm nosort"></th>
-                <th class="th-sm">
-                    Name
-                </th>
-                <th class="th-sm">
-                    Expansion
-                </th>
-                <th class="th-sm">
-                    Notes
-                </th>
-                <th class="th-sm">
-                    WarcraftMounts
-                </th>
-                <th class="th-sm">
-                    Wowhead
-                </th>
-                <th class="th-sm nosort"></th>
-            </tr>
-        </tfoot>
-    </table>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalCenter" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div id="modal-info-body" class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+    <template>
+        <div class="page-container">
+          <md-app md-waterfall md-mode="fixed">
+            <md-app-toolbar class="md-large md-dense md-primary">
+              <div class="md-toolbar-row">
+                <div class="md-toolbar-section-start">
+                  <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
+                    <md-icon>menu</md-icon>
+                  </md-button>
+      
+                  <span class="md-title">[[ title ]]</span>
+                </div>
+      
+                <div class="md-toolbar-section-end">
+                  <md-button class="md-icon-button">
+                    <md-icon>more_vert</md-icon>
+                  </md-button>
+                </div>
+              </div>
+      
+              <div class="md-toolbar-row">
+                <md-tabs class="md-primary">
+                  <md-tab id="tab-filters" md-label="Filters" @click="changeTab(0)" :md-active-tab="activeTab2 == 0"></md-tab>
+                  <md-tab id="tab-mount" md-label="Mount" @click="changeTab(1)" :md-active-tab="activeTab2 == 1"></md-tab>
+                </md-tabs>
+              </div>
+            </md-app-toolbar>
+      
+            <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
+                <md-tabs class="md-transparent" :md-active-tab="currentTab2()">
+                    <md-tab id="tab-mounts" md-label="Mounts" @click="changeTab2(0)"></md-tab>
+                    <md-tab id="tab-favorites" md-label="Favorites" @click="changeTab2(1)"></md-tab>
+                </md-tabs>
+                <!-- <md-toolbar class="md-transparent" md-elevation="0">Mounts</md-toolbar> -->
+                
+                <div class="d-drawer-list">
+                    <md-list v-if="activeTab2 == 0" class="md-scrollbar drawer-mini">
+                        <!-- {% for m in mount_list %}
+                        <md-list-item>
+                            <md-avatar @click="getDataMount('{{ m.id }}')">
+                                <img src="media/mounts/{{ m.url_img_min }}" alt="Avatar">
+                            </md-avatar>
+                            <span class="md-list-item-text" @click="getDataMount('{{ m.id }}')">{{ m.name }}</span>
+                            <md-button class="md-icon-button md-list-action" @click="saveFavorite()">
+                                <md-icon class="">star</md-icon>
+                            </md-button>
+                        </md-list-item>
+                        {% endfor %} -->
+                        <md-list-item v-for="m in showMounts" @click="">
+                            <md-avatar>
+                                <img class="img_click" :src="'media/mounts/' + m.url_img_min" alt="Avatar" v-on:click="getDataMount(m.id)">
+                            </md-avatar>
+                            <span class="md-list-item-text" v-on:click="getDataMount(m.id)">[[ m.name ]]</span>
+                            <md-button class="md-icon-button md-list-action" v-on:click="saveFavorite(m)">
+                                <md-icon class="">star</md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                    <md-list v-if="activeTab2 == 1" class="md-scrollbar drawer-mini">
+                        <md-list-item v-for="m in favorites" @click="">
+                            <md-avatar>
+                                <img class="img_click" :src="'media/mounts/' + m.url_img_min" alt="Avatar" v-on:click="getDataMount(m.id)">
+                            </md-avatar>
+                            <span class="md-list-item-text" v-on:click="getDataMount(m.id)">[[ m.name ]]</span>
+                            <md-button class="md-icon-button md-list-action" v-on:click="removeFavorite(m)">
+                                <md-icon class="">star</md-icon>
+                            </md-button>
+                        </md-list-item>
+                    </md-list>
+                </div>
+            </md-app-drawer>
+      
+            <md-app-content>
+                <div v-if="activeTab == 0" class="box-p-25">
+                    <md-card class="">
+                        <md-card-content>
+                            <md-autocomplete
+                                v-model="filter.name"
+                                :md-options="mounts"
+                                md-layout="box"
+                                md-dense>
+                                <label>Name</label>
+                            </md-autocomplete>
+                            <div class="md-layout md-gutter">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="expansions">Expansions</label>
+                                        <md-select v-model="filter.expansions" name="expansions" id="expansions" multiple>
+                                            <md-option value="0">All</md-option>
+                                            <md-option value="1">Original</md-option>
+                                            <md-option value="2">The Burning Crusade</md-option>
+                                            <md-option value="3">Wrath of The Lich King</md-option>
+                                            <md-option value="4">Cataclysm</md-option>
+                                            <md-option value="5">Mist of Pandaria</md-option>
+                                            <md-option value="6">Warlords of Draenor</md-option>
+                                            <md-option value="7">Legion</md-option>
+                                            <md-option value="8">Battle for Azeroth</md-option>
+                                            <md-option value="9">Shadowlands</md-option>
+                                        </md-select>
+                                    </md-field>
+                                </div>
+                            </div>
+                            <div class="md-layout md-gutter">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="type">Type</label>
+                                        <md-select v-model="filter.type" name="type" id="type" multiple>
+                                            <md-option value="all">All</md-option>
+                                            <md-option value="purchasable">Purchasable</md-option>
+                                            <md-option value="instance">Instance</md-option>
+                                            <md-option value="raid">Raid</md-option>
+                                            <md-option value="world_boss">World Boss</md-option>
+                                            <md-option value="achievement">Achievement</md-option>
+                                            <md-option value="others">Others</md-option>
+                                        </md-select>
+                                    </md-field>
+                                </div>
+                            </div>
+                            <div class="md-layout md-gutter">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="faction">Faction</label>
+                                        <md-select v-model="filter.faction" name="faction" id="faction">
+                                            <md-option value="both">Both</md-option>
+                                            <md-option value="aliance">Aliance</md-option>
+                                            <md-option value="horde">Horde</md-option>
+                                        </md-select>
+                                    </md-field>
+                                </div>
+                            </div>
+                            <div class="md-layout md-gutter">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="zone">Zone</label>
+                                        <md-select v-model="filter.zone" name="zone" id="zone" multiple>
+                                            <md-option value="all">All</md-option>
+                                            <md-option value="arial">Arial</md-option>
+                                            <md-option value="calibri">Calibri</md-option>
+                                            <md-option value="cambria">Cambria</md-option>
+                                            <md-option value="comic-sans">Comic Sans</md-option>
+                                            <md-option value="consolas">Consolas</md-option>
+                                            <md-option value="courier">Courier</md-option>
+                                            <md-option value="droid-sans">Droid Sans</md-option>
+                                            <md-option value="georgia">Georgia</md-option>
+                                            <md-option value="helvetica">Helvetica</md-option>
+                                            <md-option value="impact">Impact</md-option>
+                                            <md-option value="roboto">Roboto</md-option>
+                                            <md-option value="segoe-ui">Segoe UI</md-option>
+                                            <md-option value="times-new-roman">Times New Roman</md-option>
+                                            <md-option value="ubuntu">Ubuntu</md-option>
+                                            <md-option value="verdana">Verdana</md-option>
+                                        </md-select>
+                                    </md-field>
+                                </div>
+                            </div>
+                        </md-card-content>
+                        <md-card-actions>
+                            <md-button class="md-raised md-accent" @click=clearFilter()>Clear</md-button>
+                            <md-button class="md-raised md-primary" @click=searchFilter()>Search</md-button>
+                        </md-card-actions>
+                    </md-card>
+                </div>
+                <div v-if="activeTab == 1">
+                    <div class="box d-flex flex-row">
+                        <div class="box-1">
+                            <img v-if="selected.url_img_min != null" :src="'media/mounts/' + [[ selected.url_img ]]" height="500" width="500" />
+                            <img v-else="selected.url_img_min != null" src="media/img/favicon.png" height="500" width="500" />
+                        </div>
+                        <div class="box-2">
+                            <div class="box-3">
+                                <span class="md-display-3">Attempts: X</span> <br/> <br/>
+                                <div class="md-layout md-gutter">
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Name</label>
+                                            <md-input v-model="selected.name" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Expansion</label>
+                                            <md-input v-model="selected.expansion" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Zone</label>
+                                            <md-input v-model="selected.zone" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Type</label>
+                                            <md-input v-model="selected.type" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                </div>
+                                <div class="md-layout md-gutter">
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Notes</label>
+                                            <md-textarea v-model="selected.notes_2" disabled></md-textarea>
+                                        </md-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </md-app-content>
+          </md-app>
         </div>
-    </div>
-</div>
-
-<!-- IMG Modal -->
-<div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="imgModalCenter" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <img id="img-modal-lr" class="rounded mx-auto d-block" src="" asp-append-version="true" />
-            </div>
-        </div>
-    </div>
+      </template>
 </div>
 {% endblock %}
 
@@ -113,63 +224,130 @@
 
 {% block scripts %}
 <script>
-    $(document).ready(function () {
-        $('#dtBasicExample').DataTable({
-            "pageLength": 13,
-            'aoColumnDefs': [{
-                'bSortable': false,
-                'aTargets': ['nosort']
-            }]
-        });
-        $('.dataTables_length').addClass('bs-select');
-    });
+    Vue.use(VueMaterial.default)
 
-    $('#infoModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var recipient = button.data('name') // Extract info from data-* attributes
-        var modal = $(this)
-        modal.find('.modal-title').text(recipient)
-    })
-
-    $('#imgModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget)
-        var name = button.data('name')
-        var img = button.data('img')
-        var modal = $(this)
-        modal.find('.modal-title').text(name)
-        $("#img-modal-lr").attr("src", img);
-    })
-
-    function getDataMount(id) {
-        $.ajax({
-            type: "GET",
-            url: "/mount/" + id,
-            success: function (response) {
-                $("#modal-info-body").empty();
-                $("#modal-info-body").append(response);
-                console.log(response);
+    var app = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: () => ({
+            menuVisible: true,
+            activeTab: 0,
+            activeTab2: 0,
+            title: 'All',
+            mounts: [],
+            showMounts: [],
+            favorites: [],
+            filter: {
+                name: '',
+                expansions: [0],
+                type: ['all'],
+                zone: ['all'],
+                faction: 'both',
             },
-            error: function (response) {
-            }
-        });
-    }
+            selected: {
+                name: null,
+                expansion: null,
+                zone: null,
+                type: null
+            },
+            mounts: []
+        }),
+        methods: {
+            loadMounts() {
+                const vm = this;
+                // axios({
+                //     method: 'post',
+                //     url: 'loadMounts',
+                //     data: {}
+                // }).then(function (response) {
+                //     console.log(response);
+                //     vm.mounts = response;
+                // }).catch(function (error) {
+                //     console.log(error);
+                // });
+                axios({
+                    method: 'get',
+                    url: 'mounts',
+                }).then(function (response) {
+                    vm.mounts = response;
+                    $.each(vm.mounts, function( index, value ) {
+                        // if (index > 200) {
+                        //     return;
+                        // }
+                        vm.showMounts.push(value);
+                    });
+                }).catch(function (error) {
+                    // console.log(error);
+                });
+            },
+            toggleMenu() {
+                this.menuVisible = !this.menuVisible;
+            },
+            changeTab(cod) {
+                this.activeTab = cod;
+            },
+            changeTab2(cod) {
+                this.activeTab2 = cod;
+            },
+            currentTab2() {
+                if (this.activeTab2 == 0) {
+                    return "tab-mounts";
+                } else if (this.activeTab2 == 1) {
+                    return "tab-favorites";
+                }
+            },
+            getDataMount(id) {
+                this.activeTab = 1;
 
-    // $("a.cantidad-pendientes").on("click", function () {
-    //     var row = $(this).closest('tr');
-    //     var placa = (row.find("td:eq(1)").html().trim());
-    //     var estado = 0;
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "@(Url.Action("_EntregasPorEstadoYPlaca", "Distribucion"))",
-    //         data: { Placa: placa, Estado: estado },
-    //         success: function (response) {
-    //             $("#ent-pen-cuerpo").empty();
-    //             $("#ent-pen-cuerpo").append(response);
-    //             $("#entregas-pendientes").modal();
-    //         },
-    //         error: function (response) {
-    //         }
-    //     });
-    // });
+                const vm = this;
+                axios({
+                    method: 'get',
+                    url: 'mount/' + id,
+                }).then(function (response) {
+                    console.log(response);
+                    vm.selected = response;
+                    vm.title = vm.selected.name;
+                }).catch(function (error) {
+                    // console.log(error);
+                });
+            },
+            saveFavorite(mount) {
+                if ($.inArray(mount, this.favorites) == -1) {
+                    this.favorites.push(mount);
+                    this.changeTab2(1)
+                }
+            },
+            removeFavorite(mount) {
+                var index = $.inArray(mount, this.favorites);
+                if (index > -1) {
+                    this.favorites.pop(mount);
+                }
+            },
+            clearFilter() {
+                this.filter = {
+                    name: '',
+                    expansions: [0],
+                    type: ['all'],
+                    zone: ['all'],
+                    faction: 'both',
+                }
+            },
+            searchFilter() {
+
+            },
+            getValidationClass(fieldName) {
+                // const field = this.form[fieldName]
+
+                // if (field) {
+                //     return {
+                //         'md-invalid': field.$invalid && field.$dirty
+                //     }
+                // }
+            },
+        },
+        mounted() {
+            this.loadMounts();
+        }
+    })
 </script>
 {% endblock %}

@@ -4,49 +4,43 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WowsitoSite</title>
+    <link rel="shortcut icon" type="image/png" href="media/img/favicon.png"/>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/theme/default-dark.css">
+
+    <link rel="stylesheet" href="media/css/site.css" />
 
     {% block css %}
     {% endblock %}
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">MountsHunt</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-          
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">LogIn<span class="sr-only">(current)</span></a>
-                    </li>
-                </ul>
-                <!-- <ul class="navbar-nav my-2 my-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">LogIn<span class="sr-only">(current)</span></a>
-                    </li>
-                </ul> -->
-            </div>
-        </nav>
+        <div class="menu-site">
+            <h1>WowsitoSite</h1>
+            <span>MountsHunt</span>
+        </div>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            <br/>
-            {% block content %}
-            {% endblock %}
-        </main>
+    <div id="body-site">
+        <div class="container-fluid">
+                {% block content %}
+                {% endblock %}
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - WebMounts
-        </div>
-    </footer>
+    <div id="footer-site">
+        <footer class="footer text-muted">
+            <div class="container">
+                &copy; 2021 - WowsitoSite
+            </div>
+        </footer>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
@@ -54,6 +48,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material"></script>
+    <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
 
     {% block scripts %}
     {% endblock %}
