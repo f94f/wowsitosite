@@ -23,9 +23,9 @@
               </div>
       
               <div class="md-toolbar-row">
-                <md-tabs class="md-primary">
-                  <md-tab id="tab-filters" md-label="Filters" @click="changeTab(0)" :md-active-tab="activeTab2 == 0"></md-tab>
-                  <md-tab id="tab-mount" md-label="Mount" @click="changeTab(1)" :md-active-tab="activeTab2 == 1"></md-tab>
+                <md-tabs class="md-primary" :md-active-tab="currentTab()">
+                  <md-tab id="tab-filters" md-label="Filters" @click="changeTab(0)"></md-tab>
+                  <md-tab id="tab-mount" md-label="Mount" @click="changeTab(1)"></md-tab>
                 </md-tabs>
               </div>
             </md-app-toolbar>
@@ -52,20 +52,26 @@
                         {% endfor %} -->
                         <md-list-item v-for="m in showMounts" @click="">
                             <md-avatar>
-                                <img class="img_click" :src="'media/mounts/' + m.url_img_min" alt="Avatar" v-on:click="getDataMount(m.id)">
+                                <img class="img_click" :src="'media/mounts/' + m.URL_img_min" alt="Avatar" v-on:click="getDataMount(m.ID)">
                             </md-avatar>
-                            <span class="md-list-item-text" v-on:click="getDataMount(m.id)">[[ m.name ]]</span>
+                            <span class="md-list-item-text" v-on:click="getDataMount(m.ID)">[[ m.Name ]]</span>
                             <md-button class="md-icon-button md-list-action" v-on:click="saveFavorite(m)">
                                 <md-icon class="">star</md-icon>
                             </md-button>
+                        </md-list-item>
+                        <md-list-item @click="">
+                            <md-avatar>
+                                <md-icon class="">add</md-icon>
+                            </md-avatar>
+                            <span class="md-list-item-text" v-on:click="loadMoreMounts()">More</span>
                         </md-list-item>
                     </md-list>
                     <md-list v-if="activeTab2 == 1" class="md-scrollbar drawer-mini">
                         <md-list-item v-for="m in favorites" @click="">
                             <md-avatar>
-                                <img class="img_click" :src="'media/mounts/' + m.url_img_min" alt="Avatar" v-on:click="getDataMount(m.id)">
+                                <img class="img_click" :src="'media/mounts/' + m.URL_img_min" alt="Avatar" v-on:click="getDataMount(m.ID)">
                             </md-avatar>
-                            <span class="md-list-item-text" v-on:click="getDataMount(m.id)">[[ m.name ]]</span>
+                            <span class="md-list-item-text" v-on:click="getDataMount(m.ID)">[[ m.Name ]]</span>
                             <md-button class="md-icon-button md-list-action" v-on:click="removeFavorite(m)">
                                 <md-icon class="">star</md-icon>
                             </md-button>
@@ -80,7 +86,7 @@
                         <md-card-content>
                             <md-autocomplete
                                 v-model="filter.name"
-                                :md-options="mounts"
+                                :md-options="nameMounts"
                                 md-layout="box"
                                 md-dense>
                                 <label>Name</label>
@@ -90,16 +96,7 @@
                                     <md-field>
                                         <label for="expansions">Expansions</label>
                                         <md-select v-model="filter.expansions" name="expansions" id="expansions" multiple>
-                                            <md-option value="0">All</md-option>
-                                            <md-option value="1">Original</md-option>
-                                            <md-option value="2">The Burning Crusade</md-option>
-                                            <md-option value="3">Wrath of The Lich King</md-option>
-                                            <md-option value="4">Cataclysm</md-option>
-                                            <md-option value="5">Mist of Pandaria</md-option>
-                                            <md-option value="6">Warlords of Draenor</md-option>
-                                            <md-option value="7">Legion</md-option>
-                                            <md-option value="8">Battle for Azeroth</md-option>
-                                            <md-option value="9">Shadowlands</md-option>
+                                            <md-option v-for="e in expansions" :value="e.ID">[[ e.Name ]]</md-option>
                                         </md-select>
                                     </md-field>
                                 </div>
@@ -110,12 +107,7 @@
                                         <label for="type">Type</label>
                                         <md-select v-model="filter.type" name="type" id="type" multiple>
                                             <md-option value="all">All</md-option>
-                                            <md-option value="purchasable">Purchasable</md-option>
-                                            <md-option value="instance">Instance</md-option>
-                                            <md-option value="raid">Raid</md-option>
-                                            <md-option value="world_boss">World Boss</md-option>
-                                            <md-option value="achievement">Achievement</md-option>
-                                            <md-option value="others">Others</md-option>
+                                            <md-option v-for="t in types" :value="t.ID">[[ t.Name ]]</md-option>
                                         </md-select>
                                     </md-field>
                                 </div>
@@ -125,9 +117,7 @@
                                     <md-field>
                                         <label for="faction">Faction</label>
                                         <md-select v-model="filter.faction" name="faction" id="faction">
-                                            <md-option value="both">Both</md-option>
-                                            <md-option value="aliance">Aliance</md-option>
-                                            <md-option value="horde">Horde</md-option>
+                                            <md-option v-for="f in factions" :value="f.ID">[[ f.Name ]]</md-option>
                                         </md-select>
                                     </md-field>
                                 </div>
@@ -138,21 +128,6 @@
                                         <label for="zone">Zone</label>
                                         <md-select v-model="filter.zone" name="zone" id="zone" multiple>
                                             <md-option value="all">All</md-option>
-                                            <md-option value="arial">Arial</md-option>
-                                            <md-option value="calibri">Calibri</md-option>
-                                            <md-option value="cambria">Cambria</md-option>
-                                            <md-option value="comic-sans">Comic Sans</md-option>
-                                            <md-option value="consolas">Consolas</md-option>
-                                            <md-option value="courier">Courier</md-option>
-                                            <md-option value="droid-sans">Droid Sans</md-option>
-                                            <md-option value="georgia">Georgia</md-option>
-                                            <md-option value="helvetica">Helvetica</md-option>
-                                            <md-option value="impact">Impact</md-option>
-                                            <md-option value="roboto">Roboto</md-option>
-                                            <md-option value="segoe-ui">Segoe UI</md-option>
-                                            <md-option value="times-new-roman">Times New Roman</md-option>
-                                            <md-option value="ubuntu">Ubuntu</md-option>
-                                            <md-option value="verdana">Verdana</md-option>
                                         </md-select>
                                     </md-field>
                                 </div>
@@ -167,8 +142,8 @@
                 <div v-if="activeTab == 1">
                     <div class="box d-flex flex-row">
                         <div class="box-1">
-                            <img v-if="selected.url_img_min != null" :src="'media/mounts/' + [[ selected.url_img ]]" height="500" width="500" />
-                            <img v-else="selected.url_img_min != null" src="media/img/favicon.png" height="500" width="500" />
+                            <img v-if="selected.URL_img_min != null" :src="'media/mounts/' + [[ selected.URL_img ]]" height="500" width="500" />
+                            <img v-else="selected.URL_img_min != null" src="media/img/favicon.png" height="500" width="500" />
                         </div>
                         <div class="box-2">
                             <div class="box-3">
@@ -177,25 +152,39 @@
                                     <div class="md-layout-item">
                                         <md-field>
                                             <label>Name</label>
-                                            <md-input v-model="selected.name" disabled></md-input>
+                                            <md-input v-model="selected.Name" disabled></md-input>
                                         </md-field>
                                     </div>
                                     <div class="md-layout-item">
                                         <md-field>
                                             <label>Expansion</label>
-                                            <md-input v-model="selected.expansion" disabled></md-input>
+                                            <md-input v-model="selected.Expansion" disabled></md-input>
                                         </md-field>
                                     </div>
                                     <div class="md-layout-item">
                                         <md-field>
                                             <label>Zone</label>
-                                            <md-input v-model="selected.zone" disabled></md-input>
+                                            <md-input v-model="selected.Zone" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                </div>
+                                <div class="md-layout md-gutter">
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Type</label>
+                                            <md-input v-model="selected.Type" disabled></md-input>
                                         </md-field>
                                     </div>
                                     <div class="md-layout-item">
                                         <md-field>
-                                            <label>Type</label>
-                                            <md-input v-model="selected.type" disabled></md-input>
+                                            <label>Faction</label>
+                                            <md-input v-model="selected.Faction" disabled></md-input>
+                                        </md-field>
+                                    </div>
+                                    <div class="md-layout-item">
+                                        <md-field>
+                                            <label>Note</label>
+                                            <md-input v-model="selected.Notes_1" disabled></md-input>
                                         </md-field>
                                     </div>
                                 </div>
@@ -203,7 +192,7 @@
                                     <div class="md-layout-item">
                                         <md-field>
                                             <label>Notes</label>
-                                            <md-textarea v-model="selected.notes_2" disabled></md-textarea>
+                                            <md-textarea v-model="selected.Notes_2" disabled></md-textarea>
                                         </md-field>
                                     </div>
                                 </div>
@@ -214,6 +203,7 @@
             </md-app-content>
           </md-app>
         </div>
+        <md-snackbar :md-active.sync="snackBar.show">[[snackBar.msg]]</md-snackbar>
       </template>
 </div>
 {% endblock %}
@@ -235,51 +225,29 @@
             activeTab2: 0,
             title: 'All',
             mounts: [],
+            expansions: [],
+            types: [],
+            factions: [],
+            zones: [],
             showMounts: [],
+            filterMounts: [],
+            nameMounts: [],
             favorites: [],
             filter: {
                 name: '',
-                expansions: [0],
-                type: ['all'],
-                zone: ['all'],
-                faction: 'both',
+                expansions: [],
+                type: [],
+                zone: [],
+                faction: '1',
             },
-            selected: {
-                name: null,
-                expansion: null,
-                zone: null,
-                type: null
+            selected: {},
+            tamanio: 99,
+            snackBar: {
+                show: false,
+                msg: null
             },
-            mounts: []
         }),
         methods: {
-            loadMounts() {
-                const vm = this;
-                // axios({
-                //     method: 'post',
-                //     url: 'loadMounts',
-                //     data: {}
-                // }).then(function (response) {
-                //     console.log(response);
-                //     vm.mounts = response;
-                // }).catch(function (error) {
-                //     console.log(error);
-                // });
-                axios({
-                    method: 'get',
-                    url: 'mounts',
-                }).then(function (response) {
-                    vm.mounts = response;
-                    $.each(vm.mounts, function( index, value ) {
-                        // if (index > 200) {
-                        //     return;
-                        // }
-                        vm.showMounts.push(value);
-                    });
-                }).catch(function (error) {
-                    // console.log(error);
-                });
-            },
             toggleMenu() {
                 this.menuVisible = !this.menuVisible;
             },
@@ -289,27 +257,19 @@
             changeTab2(cod) {
                 this.activeTab2 = cod;
             },
+            currentTab() {
+                if (this.activeTab == 0) {
+                    return "tab-filters";
+                } else if (this.activeTab == 1) {
+                    return "tab-mount";
+                }
+            },
             currentTab2() {
                 if (this.activeTab2 == 0) {
                     return "tab-mounts";
                 } else if (this.activeTab2 == 1) {
                     return "tab-favorites";
                 }
-            },
-            getDataMount(id) {
-                this.activeTab = 1;
-
-                const vm = this;
-                axios({
-                    method: 'get',
-                    url: 'mount/' + id,
-                }).then(function (response) {
-                    console.log(response);
-                    vm.selected = response;
-                    vm.title = vm.selected.name;
-                }).catch(function (error) {
-                    // console.log(error);
-                });
             },
             saveFavorite(mount) {
                 if ($.inArray(mount, this.favorites) == -1) {
@@ -326,27 +286,89 @@
             clearFilter() {
                 this.filter = {
                     name: '',
-                    expansions: [0],
-                    type: ['all'],
-                    zone: ['all'],
-                    faction: 'both',
+                    expansions: [],
+                    type: [],
+                    zone: [],
+                    faction: '1',
                 }
             },
+            setMounts() {
+                const vm = this;
+                vm.showMounts = [];
+                vm.nameMounts = [];
+                $.each(vm.mounts, function( index, value ) {
+                    if (index < vm.tamanio) {
+                        vm.showMounts.push(value);
+                    }
+                    vm.nameMounts.push(value.Name);
+                });
+                vm.showSnack("Mounts loaded")
+            },
+            loadMoreMounts() {
+                const vm = this;
+                var max = vm.showMounts.length + vm.tamanio;
+                if (max < vm.mounts.length) {
+                    for (var i = vm.showMounts.length-1; i < vm.mounts.length && i < max; i++) {
+                        vm.showMounts.push(vm.mounts[i]);
+                    }
+                    vm.showSnack("Added 100 (total: " + vm.showMounts.length + ")")
+                    console.log("Added 100: " + vm.showMounts.length)
+                } else {
+                    vm.showSnack("All out: " + vm.showMounts.length)
+                    console.log("All out: " + vm.showMounts.length)
+                }
+            },
+            firstLoad() {
+                const vm = this;
+                axios({
+                    method: 'get',
+                    url: 'firstLoad',
+                }).then(function (response) {
+                    vm.mounts = response.mounts;
+                    vm.expansions = response.expansions;
+                    vm.types = response.types
+                    vm.factions = response.factions
+                    vm.zones = response.zones
+                    vm.setMounts();
+                }).catch(function (error) {
+                    // console.log(error);
+                });
+            },
+            getDataMount(id) {
+                const vm = this;
+                vm.activeTab = 1;
+                axios({
+                    method: 'get',
+                    url: 'mount/' + id,
+                }).then(function (response) {
+                    vm.selected = response;
+                    vm.title = vm.selected.Name;
+                    // vm.showSnack("Selected: " + vm.selected.Name)
+                }).catch(function (error) {
+                    // console.log(error);
+                });
+            },
             searchFilter() {
-
+                const vm = this;
+                axios({
+                    method: 'post',
+                    url: 'filterMounts',
+                    data: { 'filter': vm.filter},
+                    headers: { 'Content-Type': 'application/json' }
+                }).then(function (response) {
+                    vm.mounts = response;
+                    vm.setMounts();
+                }).catch(function (error) {
+                    // console.log(error);
+                });
             },
-            getValidationClass(fieldName) {
-                // const field = this.form[fieldName]
-
-                // if (field) {
-                //     return {
-                //         'md-invalid': field.$invalid && field.$dirty
-                //     }
-                // }
-            },
+            showSnack(msg) {
+                this.snackBar.msg = msg;
+                this.snackBar.show = true;
+            }
         },
         mounted() {
-            this.loadMounts();
+            this.firstLoad();
         }
     })
 </script>

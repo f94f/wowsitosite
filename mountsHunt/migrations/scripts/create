@@ -1,0 +1,52 @@
+CREATE TABLE EXPANSION(
+   ID      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+   Name    TEXT    NOT NULL
+);
+
+CREATE TABLE ZONE(
+   ID             INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+   Name           TEXT    NOT NULL,
+   Description    TEXT
+);
+
+CREATE TABLE TYPE_MOUNT(
+    ID             INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    Name           TEXT    NOT NULL,
+    Description    TEXT
+);
+
+CREATE TABLE TYPE_TIMING(
+    ID             INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    Name           TEXT    NOT NULL,
+    Description    TEXT
+);
+
+CREATE TABLE FACTION(
+    ID             INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    Name           TEXT    NOT NULL
+);
+
+CREATE TABLE MOUNT (
+    ID              TEXT  NOT NULL PRIMARY KEY,
+    Name            TEXT  NOT NULL,
+    Expansion_id    INTEGER  NOT NULL,
+    Notes_1         TEXT,
+    Notes_2         TEXT,
+    Requirements    TEXT,
+    Source          TEXT,
+    Zone_id         TEXT,
+    URL_info        TEXT,
+    URL_wowhead     TEXT,
+    Image_mini      TEXT,
+    Image           TEXT,
+    URL_img         TEXT,
+    URL_img_min     TEXT,
+    Faction_id      INTEGER,
+    Type_id         INTEGER,
+    Type_timing_id  INTEGER,
+    FOREIGN KEY(Expansion_id) REFERENCES EXPANSION(ID),
+    FOREIGN KEY(Zone_id) REFERENCES EXPANSION(ID),
+    FOREIGN KEY(Faction_id) REFERENCES FACTION(ID),
+    FOREIGN KEY(Type_id) REFERENCES TYPE_MOUNT(ID),
+    FOREIGN KEY(Type_timing_id) REFERENCES TYPE_TIMING(ID)
+);
